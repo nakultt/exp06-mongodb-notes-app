@@ -29,6 +29,32 @@ A full-stack notes application. The back end is a REST API built with Node.js, E
 | Front end | React 19, Vite, Fetch API |
 | Tools | mongosh, curl |
 
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph Client["client/ — React + Vite"]
+        APP[App.jsx] --> NF[NoteForm]
+        APP --> NC[NoteCard]
+        APP --> EM[EditModal]
+        NF & EM --> CP[ColorPicker]
+        APP --> API[api.js<br/>fetch wrapper]
+    end
+
+    API -->|REST /api/notes| SRV
+
+    subgraph SRV["server/ — Node + Express"]
+        S[server.js<br/>CORS · JSON · error handler]
+        RT[routes/notes.js<br/>GET · GET :id · POST · PUT :id · DELETE :id]
+        MD[models/Note.js<br/>title · content · color · pinned · timestamps]
+        S --> RT --> MD
+    end
+
+    MD --> DB[(MongoDB<br/>via Mongoose)]
+```
+
+It is a classic three-tier MERN layout. The React client calls the Express REST API, which validates requests and persists notes through Mongoose. Pinned notes are listed first.
+
 ## Folder Structure
 
 ```
